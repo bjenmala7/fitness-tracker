@@ -855,20 +855,44 @@
                 <div class="card">
                     <h2>🍽️ Log Your Meals</h2>
                     
-                    <div class="input-group">
-                        <select id="foodSelect">
-                            <option value="">Pick a food...</option>
-                            <option value="1">Breakfast: Oatmeal (350 cal)</option>
-                            <option value="2">Breakfast: Eggs (400 cal)</option>
-                            <option value="3">Lunch: Chicken (500 cal)</option>
-                            <option value="4">Snack: Apple (80 cal)</option>
-                            <option value="5">Dinner: Fish (480 cal)</option>
-                        </select>
-                        <button onclick="addPresetFood()">Add</button>
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; font-weight: 600;">📸 Upload Food Photo & AI Count Calories</h3>
+                        <div class="input-group" style="flex-direction: column;">
+                            <input type="file" id="mealImage" accept="image/*" onchange="previewMealImage()" style="padding: 12px 14px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;" />
+                        </div>
+
+                        <div id="imagePreview" style="display: none; margin: 1.5rem 0;">
+                            <img id="previewImg" src="" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+                            <div class="input-group">
+                                <input type="text" id="mealNameInput" placeholder="What did you eat?" />
+                                <button onclick="analyzeWithAI()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 11px 28px; border-radius: 8px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">Analyze 🤖</button>
+                            </div>
+                            <div id="analysisResult" style="margin-top: 1rem; padding: 1rem; background: #f5f6f7; border-radius: 8px; display: none;">
+                                <div style="font-weight: 700; color: #667eea; margin-bottom: 0.5rem;" id="resultTitle"></div>
+                                <div style="font-size: 2rem; font-weight: bold; color: #667eea; margin: 0.5rem 0;" id="resultCalories"></div>
+                                <div style="font-size: 0.9rem; color: #636e72;" id="resultDetails"></div>
+                                <button onclick="saveAnalyzedMeal()" style="width: 100%; margin-top: 1rem; padding: 11px; background: linear-gradient(135deg, #0984e3 0%, #00b894 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Save Meal ✓</button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div style="margin: 1.5rem 0; padding-top: 1.5rem; border-top: 1px solid #ecf0f1;">
-                        <h3 style="margin-bottom: 1rem;">Custom Meal</h3>
+                    <div style="border-top: 1px solid #ecf0f1; padding-top: 1.5rem; margin-top: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem; font-weight: 600;">🍴 Quick Add</h3>
+                        <div class="input-group">
+                            <select id="foodSelect">
+                                <option value="">Pick a food...</option>
+                                <option value="1">Breakfast: Oatmeal (350 cal)</option>
+                                <option value="2">Breakfast: Eggs (400 cal)</option>
+                                <option value="3">Lunch: Chicken (500 cal)</option>
+                                <option value="4">Snack: Apple (80 cal)</option>
+                                <option value="5">Dinner: Fish (480 cal)</option>
+                            </select>
+                            <button onclick="addPresetFood()">Add</button>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid #ecf0f1; padding-top: 1.5rem; margin-top: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem; font-weight: 600;">✍️ Custom Meal</h3>
                         <div class="input-group">
                             <input type="text" id="customFood" placeholder="Food name" />
                             <input type="number" id="customCals" placeholder="Calories" style="min-width: 110px;" />
@@ -878,7 +902,7 @@
                 </div>
 
                 <div class="card">
-                    <h2>Meals Today</h2>
+                    <h2>🍽️ Meals Today</h2>
                     <div id="mealsList" style="text-align: center; padding: 2rem; color: #b2bec3;">No meals logged yet</div>
                 </div>
             </div>
@@ -1436,6 +1460,156 @@
             meals.push({date: today, name, calories, time});
             localStorage.setItem('mealsToday', JSON.stringify(meals));
             updateDisplay();
+        }
+
+        function previewMealImage() {
+            const fileInput = document.getElementById('mealImage');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    document.getElementById('analysisResult').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function analyzeWithAI() {
+            const mealName = document.getElementById('mealNameInput').value;
+            const fileInput = document.getElementById('mealImage');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please upload a food photo first!');
+                return;
+            }
+
+            if (!mealName) {
+                alert('Please enter meal name!');
+                return;
+            }
+
+            document.getElementById('resultTitle').textContent = 'Analyzing your meal...';
+            document.getElementById('resultCalories').textContent = 'Processing...';
+            document.getElementById('resultDetails').innerHTML = '<div>Detecting food items...</div>';
+            document.getElementById('analysisResult').style.display = 'block';
+
+            try {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const base64Data = e.target.result.split(',')[1];
+                    
+                    try {
+                        const response = await fetch("https://api.anthropic.com/v1/messages", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "x-api-key": "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",
+                                "anthropic-version": "2023-06-01"
+                            },
+                            body: JSON.stringify({
+                                model: "claude-opus-4-1",
+                                max_tokens: 1024,
+                                messages: [
+                                    {
+                                        role: "user",
+                                        content: [
+                                            {
+                                                type: "image",
+                                                source: {
+                                                    type: "base64",
+                                                    media_type: "image/jpeg",
+                                                    data: base64Data
+                                                }
+                                            },
+                                            {
+                                                type: "text",
+                                                text: `User says this meal is: ${mealName}. Analyze this food image and provide detailed nutrition. Format as JSON: {"foods": "description", "weight": "weight in grams", "calories": NUMBER, "protein": "grams", "carbs": "grams", "fat": "grams", "fiber": "grams"}`
+                                            }
+                                        ]
+                                    }
+                                ]
+                            })
+                        });
+
+                        const data = await response.json();
+                        
+                        if (data.content && data.content[0]) {
+                            const content = data.content[0].text;
+                            
+                            try {
+                                const analysis = JSON.parse(content);
+                                
+                                document.getElementById('resultTitle').textContent = analysis.foods;
+                                document.getElementById('resultCalories').textContent = analysis.calories + ' cal';
+                                document.getElementById('resultDetails').innerHTML = `
+                                    <div style="margin-bottom: 0.8rem; font-weight: 600; color: #2d3436;">📊 Weight: ${analysis.weight}</div>
+                                    <div style="background: white; padding: 1rem; border-radius: 8px;">
+                                        <div style="margin-bottom: 0.5rem;"><strong>💪 Protein:</strong> ${analysis.protein}</div>
+                                        <div style="margin-bottom: 0.5rem;"><strong>🌾 Carbs:</strong> ${analysis.carbs}</div>
+                                        <div style="margin-bottom: 0.5rem;"><strong>🧈 Fat:</strong> ${analysis.fat}</div>
+                                        <div><strong>🌿 Fiber:</strong> ${analysis.fiber}</div>
+                                    </div>
+                                `;
+                                
+                                window.analyzedCalories = analysis.calories;
+                                window.analyzedFood = analysis.foods;
+                            } catch (parseError) {
+                                document.getElementById('resultTitle').textContent = mealName;
+                                document.getElementById('resultCalories').textContent = '350 cal (estimate)';
+                                document.getElementById('resultDetails').innerHTML = `<div>Could not parse nutrition - using estimate.</div>`;
+                                window.analyzedCalories = 350;
+                                window.analyzedFood = mealName;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.getElementById('resultTitle').textContent = mealName;
+                        document.getElementById('resultCalories').textContent = '350 cal (estimate)';
+                        document.getElementById('resultDetails').innerHTML = `<div style="color: #e74c3c;">⚠️ Analysis failed - using estimate</div>`;
+                        window.analyzedCalories = 350;
+                        window.analyzedFood = mealName;
+                    }
+                };
+                reader.readAsDataURL(file);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function saveAnalyzedMeal() {
+            const mealName = document.getElementById('mealNameInput').value || window.analyzedFood || 'Meal';
+            const calories = window.analyzedCalories || 300;
+            
+            if (!mealName) {
+                alert('Please enter meal name!');
+                return;
+            }
+
+            const today = getTodayDate();
+            const time = new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+            const imageBase64 = document.getElementById('previewImg').src;
+            
+            meals.push({
+                date: today,
+                name: mealName,
+                calories: calories,
+                time: time,
+                image: imageBase64
+            });
+            
+            localStorage.setItem('mealsToday', JSON.stringify(meals));
+            
+            document.getElementById('mealImage').value = '';
+            document.getElementById('mealNameInput').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('analysisResult').style.display = 'none';
+            
+            updateDisplay();
+            alert('✓ Meal with photo & AI calories saved!');
         }
 
         function addPresetFood() {
