@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker - Your 69kg to 50kg Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #2d3436;
+        }
+
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 18px;
+            background: transparent;
+            border: 2px solid transparent;
+            color: #636e72;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .nav-btn.active {
+            color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Page transitions */
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Home Page */
+        .home-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .home-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .home-hero p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+
+        .progress-ring-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .progress-ring {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .progress-ring-text {
+            text-align: center;
+        }
+
+        .progress-ring-text .big {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .progress-ring-text .small {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 4px solid #667eea;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #636e72;
+            font-weight: 500;
+        }
+
+        /* Motivation Page */
+        .motivation-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quote-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .quote-card .quote {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .quote-card .author {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .motivation-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .motivation-section h3 {
+            margin-bottom: 1rem;
+            color: #2d3436;
+            font-size: 1.2rem;
+        }
+
+        .motivation-section p {
+            line-height: 1.8;
+            color: #636e72;
+            margin-bottom: 0.8rem;
+        }
+
+        .milestone-list {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .milestone-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-left: 4px solid #667eea;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .milestone-item .number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-right: 1rem;
+            min-width: 40px;
+        }
+
+        .milestone-item .text {
+            flex: 1;
+        }
+
+        .milestone-item .date {
+            font-size: 0.9rem;
+            color: #b2bec3;
+        }
+
+        /* Common Styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: #2d3436;
+        }
+
+        .stat-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .stat-box.success {
+            background: linear-gradient(135deg, #0984e3 0%, #00b894 100%);
+        }
+
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .input-group input,
+        .input-group select {
+            flex: 1;
+            min-width: 140px;
+            padding: 11px 14px;
+            border: 1.5px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group button {
+            padding: 11px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .input-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 28px;
+            background: #ecf0f1;
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 1rem 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: width 0.3s ease;
+        }
+
+        .food-item {
+            background: #f5f6f7;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.6rem 0;
+        }
+
+        .food-name {
+            flex: 1;
+        }
+
+        .food-name div:first-child {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 0.2rem;
+        }
+
+        .food-name div:last-child {
+            font-size: 0.85rem;
+            color: #b2bec3;
+        }
+
+        .food-cals {
+            font-weight: 700;
+            color: #667eea;
+            margin: 0 1rem;
+        }
+
+        .delete-btn {
+            background: #ff7675;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #d63031;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .home-hero {
+                padding: 2rem;
+            }
+
+            .home-hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .water-btn {
+            padding: 12px 16px;
+            background: white;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .water-btn:hover {
+            border-color: #3498db;
+            background: #e3f2fd;
+            color: #3498db;
+        }
+
+        .water-btn.active {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+            border-color: #3498db;
+        }
+
+        .day-plan {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-top: 4px solid #667eea;
+        }
+
+        .day-plan h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #2d3436;
+        }
+
+        .meal-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 0.6rem;
+        }
+
+        .meal-time {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 100px;
+        }
+
+        .meal-food {
+            flex: 1;
+            margin: 0 1rem;
+            color: #2d3436;
+        }
+
+        .meal-cal {
+            font-weight: 600;
+            color: #636e72;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .day-select-btn {
+            padding: 10px 16px;
+            background: white;
+            border: 1.5px solid #dfe6e9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            color: #636e72;
+        }
+
+        .day-select-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .day-select-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 14px;
+            max-width: 550px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #b2bec3;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: #2d3436;
+        }
+
+        .video-container-modal {
+            width: 100%;
+            position: relative;
+            padding-bottom: 56.25%;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-container-modal iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .timer-box-modal {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .timer-display-modal {
+            font-size: 2.8rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+        }
+
+        .exercise-title-modal {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2d3436;
+        }
+
+        .exercise-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f5f6f7;
+            border-radius: 8px;
+            margin: 0.6rem 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .exercise-item:hover {
+            background: #ecf0f1;
+            transform: translateX(2px);
+        }
+
+        .exercise-item.completed {
+            background: #e8f8f5;
+        }
+
+        .exercise-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .exercise-name {
+            flex: 1;
+            font-weight: 500;
+            color: #2d3436;
+        }
+
+        .exercise-item.completed .exercise-name {
+            color: #b2bec3;
+            text-decoration: line-through;
+        }
+
+        .exercise-time {
+            font-size: 0.8rem;
+            color: #b2bec3;
+            margin-left: 12px;
+            white-space: nowrap;
+        }
+
+        .progress-view-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">💪 FitTrack</div>
+                <div class="nav-buttons">
+                    <button class="nav-btn active" onclick="goToPage('home')">Home</button>
+                    <button class="nav-btn" onclick="goToPage('mealplan')">Meal Plan</button>
+                    <button class="nav-btn" onclick="goToPage('water')">Water</button>
+                    <button class="nav-btn" onclick="goToPage('calories')">Calories</button>
+                    <button class="nav-btn" onclick="goToPage('weight')">Weight</button>
+                    <button class="nav-btn" onclick="goToPage('meals')">Meals</button>
+                    <button class="nav-btn" onclick="goToPage('workouts')">Workouts</button>
+                    <button class="nav-btn" onclick="goToPage('progress')">Progress</button>
+                    <button class="nav-btn" onclick="goToPage('motivation')">Motivation</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Home Page -->
+            <div id="home" class="page active">
+                <div class="home-hero">
+                    <h1>🎯 Your Fitness Journey</h1>
+                    <p>69 kg → 50 kg | Track, Achieve, Celebrate</p>
+                    
+                    <div class="progress-ring-container">
+                        <div class="progress-ring">
+                            <div class="progress-ring-text">
+                                <div class="big" id="homeProgress">0%</div>
+                                <div class="small">Progress</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 1rem; opacity: 0.9;">Your transformation starts today. Track every meal, complete every workout, achieve your goals! 💪</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="value" id="homeWeight">69.0</div>
+                        <div class="label">Current Weight (kg)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="homeLost">0</div>
+                        <div class="label">Lost So Far</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="homeRemaining">19</div>
+                        <div class="label">To Goal</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="homeMeals">0</div>
+                        <div class="label">Meals Today</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📋 Today's Summary</h2>
+                    <div class="stat-grid-2">
+                        <div class="stat-box">
+                            <div class="stat-val" id="homeCalsEaten">0</div>
+                            <div class="stat-label">Eaten / 1600</div>
+                        </div>
+                        <div class="stat-box success">
+                            <div class="stat-val" id="homeCalsLeft">1600</div>
+                            <div class="stat-label">Remaining</div>
+                        </div>
+                        <div class="stat-box success">
+                            <div class="stat-val" id="homeDeficit">0</div>
+                            <div class="stat-label">Deficit (cal)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calories Page -->
+            <div id="calories" class="page">
+                <div class="card">
+                    <h2>📊 Daily Calorie Balance</h2>
+                    
+                    <div class="stat-grid-2">
+                        <div class="stat-box">
+                            <div class="stat-label">Eaten</div>
+                            <div class="stat-val" id="caloriesEaten">0</div>
+                            <div style="font-size: 0.8rem; opacity: 0.9;">/ 1600 cal</div>
+                        </div>
+                        <div class="stat-box success">
+                            <div class="stat-label">Burned</div>
+                            <div class="stat-val" id="caloriesBurned">0</div>
+                            <div style="font-size: 0.8rem; opacity: 0.9;">from workouts</div>
+                        </div>
+                        <div class="stat-box success">
+                            <div class="stat-label">Remaining</div>
+                            <div class="stat-val" id="caloriesLeft">1600</div>
+                            <div style="font-size: 0.8rem; opacity: 0.9;">can eat</div>
+                        </div>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <div style="font-weight: 600; margin-bottom: 10px; color: #2d3436; font-size: 0.9rem;">Intake Progress</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="calorieBar" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weight Page -->
+            <div id="weight" class="page">
+                <div class="card">
+                    <h2>⚖️ Weight Progress</h2>
+                    
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <div style="font-size: 2.8rem; font-weight: 700; color: #667eea;" id="currentWeight">69.0</div>
+                        <div style="font-size: 1rem; color: #b2bec3;">kg</div>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="number" id="weightInput" placeholder="69.0" step="0.1" />
+                        <button onclick="logWeight()">Log Weight</button>
+                    </div>
+
+                    <div class="stat-grid-2">
+                        <div class="stat-box">
+                            <div class="stat-val" id="lost">0</div>
+                            <div class="stat-label">kg lost</div>
+                        </div>
+                        <div class="stat-box success">
+                            <div class="stat-val" id="remaining">19</div>
+                            <div class="stat-label">kg to goal</div>
+                        </div>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <div style="font-weight: 600; margin-bottom: 10px; color: #2d3436; font-size: 0.9rem;">Progress to Goal</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="weightBar" style="width: 0%; background: linear-gradient(90deg, #0984e3 0%, #00b894 100%);">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meals Page -->
+            <div id="meals" class="page">
+                <div class="card">
+                    <h2>🍽️ Log Your Meals</h2>
+                    
+                    <div class="input-group">
+                        <select id="foodSelect">
+                            <option value="">Pick a food...</option>
+                            <option value="1">Breakfast: Oatmeal (350 cal)</option>
+                            <option value="2">Breakfast: Eggs (400 cal)</option>
+                            <option value="3">Lunch: Chicken (500 cal)</option>
+                            <option value="4">Snack: Apple (80 cal)</option>
+                            <option value="5">Dinner: Fish (480 cal)</option>
+                        </select>
+                        <button onclick="addPresetFood()">Add</button>
+                    </div>
+
+                    <div style="margin: 1.5rem 0; padding-top: 1.5rem; border-top: 1px solid #ecf0f1;">
+                        <h3 style="margin-bottom: 1rem;">Custom Meal</h3>
+                        <div class="input-group">
+                            <input type="text" id="customFood" placeholder="Food name" />
+                            <input type="number" id="customCals" placeholder="Calories" style="min-width: 110px;" />
+                            <button onclick="addCustomFood()">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Meals Today</h2>
+                    <div id="mealsList" style="text-align: center; padding: 2rem; color: #b2bec3;">No meals logged yet</div>
+                </div>
+            </div>
+
+            <!-- Workouts Page -->
+            <div id="workouts" class="page">
+                <div class="card">
+                    <h2>🏋️ Your Workouts</h2>
+                    
+                    <div style="background: #f0f4ff; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #667eea;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div>
+                                <div style="font-weight: 600; color: #667eea;">🧘 Morning Yoga</div>
+                                <div style="font-size: 0.9rem; color: #636e72;">6:30 - 7:30 AM</div>
+                                <div style="font-size: 0.9rem; color: #636e72;">180 cal burn</div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #667eea;">💪 Evening Workout</div>
+                                <div style="font-size: 0.9rem; color: #636e72;">5:30 - 6:30 PM</div>
+                                <div style="font-size: 0.9rem; color: #636e72;">350 cal burn</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">📅 Select a Day</h3>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+                            <button class="day-select-btn active" onclick="selectWorkoutDay(0)">Mon</button>
+                            <button class="day-select-btn" onclick="selectWorkoutDay(1)">Tue</button>
+                            <button class="day-select-btn" onclick="selectWorkoutDay(2)">Wed</button>
+                            <button class="day-select-btn" onclick="selectWorkoutDay(3)">Thu</button>
+                            <button class="day-select-btn" onclick="selectWorkoutDay(4)">Fri</button>
+                        </div>
+                    </div>
+
+                    <div id="dayWorkoutContent"></div>
+                </div>
+            </div>
+
+            <div id="exerciseModal" class="modal">
+                <div class="modal-content">
+                    <button class="close-modal" onclick="closeExerciseModal()">×</button>
+                    
+                    <div class="exercise-title-modal" id="modalTitle">Exercise</div>
+                    
+                    <div class="video-container-modal">
+                        <iframe id="modalVideo" src=""></iframe>
+                    </div>
+
+                    <div class="timer-box-modal">
+                        <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">Time for this exercise</div>
+                        <div class="timer-display-modal" id="modalTimer">00:00</div>
+                        <div style="font-size: 0.85rem;" id="modalTimerInfo"></div>
+                    </div>
+
+                    <div style="background: #f5f6f7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;" id="modalInfo"></div>
+
+                    <button id="markDoneBtn" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #0984e3 0%, #00b894 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem;">Mark as Completed ✓</button>
+                </div>
+            </div>
+
+            <!-- Progress Page -->
+            <div id="progress" class="page">
+                <div class="card">
+                    <h2>📈 Your Progress</h2>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                        <button onclick="showProgressView('daily')" class="progress-view-btn active" id="viewDaily" style="padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Daily</button>
+                        <button onclick="showProgressView('monthly')" class="progress-view-btn" id="viewMonthly" style="padding: 12px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 8px; font-weight: 600; cursor: pointer;">Monthly</button>
+                        <button onclick="showProgressView('sixmonths')" class="progress-view-btn" id="viewSixMonths" style="padding: 12px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 8px; font-weight: 600; cursor: pointer;">6 Months</button>
+                    </div>
+
+                    <!-- Daily View -->
+                    <div id="dailyView">
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #2d3436;">Last 30 Days Activity</h3>
+                        <div id="dailyLogs" style="max-height: 500px; overflow-y: auto;"></div>
+                    </div>
+
+                    <!-- Monthly View -->
+                    <div id="monthlyView" style="display: none;">
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #2d3436;">Monthly Summary</h3>
+                        <div class="stat-grid-2">
+                            <div class="stat-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="stat-label">Total Workouts</div>
+                                <div class="stat-val" id="monthWorkouts">0</div>
+                            </div>
+                            <div class="stat-box success">
+                                <div class="stat-label">Weight Lost</div>
+                                <div class="stat-val" id="monthWeightLost">0</div>
+                                <div style="font-size: 0.8rem; opacity: 0.9;">kg</div>
+                            </div>
+                            <div class="stat-box" style="background: linear-gradient(135deg, #F39C12 0%, #FF8C42 100%);">
+                                <div class="stat-label">Avg Daily Cal</div>
+                                <div class="stat-val" id="monthAvgCal">0</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 2rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 1rem; color: #2d3436;">Weight Trend (Last 30 Days)</h4>
+                            <div id="weightChart" style="background: #f5f6f7; padding: 1.5rem; border-radius: 8px; height: 250px; display: flex; align-items: flex-end; justify-content: space-around; gap: 8px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- 6 Months View -->
+                    <div id="sixMonthsView" style="display: none;">
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #2d3436;">6-Month Progress</h3>
+                        
+                        <div class="stat-grid-2">
+                            <div class="stat-box">
+                                <div class="stat-val" id="sixMonthWorkouts">0</div>
+                                <div class="stat-label">Total Workouts</div>
+                            </div>
+                            <div class="stat-box success">
+                                <div class="stat-val" id="sixMonthWeightLost">0</div>
+                                <div class="stat-label">Total Weight Lost</div>
+                            </div>
+                            <div class="stat-box" style="background: linear-gradient(135deg, #F39C12 0%, #FF8C42 100%);">
+                                <div class="stat-val" id="sixMonthDaysActive">0</div>
+                                <div class="stat-label">Days Active</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 2rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 1rem; color: #2d3436;">🏆 Achievement Milestones</h4>
+                            <div id="achievements"></div>
+                        </div>
+
+                        <div style="margin-top: 2rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 1rem; color: #2d3436;">Weight Loss Journey</h4>
+                            <div id="weightTrendChart" style="background: #f5f6f7; padding: 1.5rem; border-radius: 8px; height: 250px; display: flex; align-items: flex-end; justify-content: space-around; gap: 4px;"></div>
+                        </div>
+
+                        <div style="margin-top: 2rem; background: #f5f6f7; padding: 1.5rem; border-radius: 8px;">
+                            <h4 style="font-weight: 600; margin-bottom: 1rem; color: #2d3436;">Detailed Stats</h4>
+                            <div id="detailedStats"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meal Plan Page -->
+            <div id="mealplan" class="page">
+                <div class="card">
+                    <h2>🍽️ Your Indian Weight Loss Meal Plan</h2>
+                    <p style="color: #636e72; margin-bottom: 1.5rem;">Monday to Friday disciplined meal plan - 1600 calories/day for healthy weight loss</p>
+                    
+                    <div style="background: #f0f4ff; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #667eea;">
+                        <div style="font-weight: 600; color: #667eea; margin-bottom: 0.5rem;">💡 Meal Plan Structure</div>
+                        <div style="font-size: 0.9rem; color: #636e72; line-height: 1.8;">
+                            🌅 <strong>Breakfast (6:30 AM):</strong> 300-350 cal | Before yoga<br>
+                            ☕ <strong>Mid-Morning (9:30 AM):</strong> 100-150 cal | Light snack<br>
+                            🍴 <strong>Lunch (12:30 PM):</strong> 450-500 cal | Main meal<br>
+                            🥤 <strong>Evening (4:00 PM):</strong> 100-150 cal | Tea/snack<br>
+                            🍽️ <strong>Dinner (7:30 PM):</strong> 400-450 cal | After workout
+                        </div>
+                    </div>
+                </div>
+
+                <div id="mealPlanContainer"></div>
+            </div>
+
+            <!-- Water Tracking Page -->
+            <div id="water" class="page">
+                <div class="card">
+                    <h2>💧 Daily Water & Herbal Drinks Tracker</h2>
+                    <p style="color: #636e72; margin-bottom: 1.5rem;">Track your water intake - Aim for 3-4 liters per day</p>
+
+                    <div class="stat-grid-2">
+                        <div class="stat-box">
+                            <div class="stat-val" id="waterCount">0</div>
+                            <div class="stat-label">Glasses (250ml)</div>
+                        </div>
+                        <div class="stat-box success">
+                            <div class="stat-val" id="waterLiters">0</div>
+                            <div class="stat-label">Liters Today</div>
+                        </div>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="waterBar" style="width: 0%; background: linear-gradient(90deg, #3498db 0%, #2ecc71 100%);">0%</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                        <button class="water-btn" onclick="addWater('water')">💧 Normal Water</button>
+                        <button class="water-btn" onclick="addWater('methi')">🌿 Methi Water</button>
+                        <button class="water-btn" onclick="addWater('lemon')">🍋 Lemon Water</button>
+                        <button class="water-btn" onclick="addWater('ginger')">🥄 Ginger Tea</button>
+                        <button class="water-btn" onclick="addWater('green')">🍃 Green Tea</button>
+                        <button class="water-btn" onclick="addWater('herbal')">🌱 Herbal Tea</button>
+                    </div>
+
+                    <div id="waterLog" style="background: #f5f6f7; padding: 1.5rem; border-radius: 8px;"></div>
+                </div>
+
+                <div class="card">
+                    <h2>🥗 Benefits of Each Drink</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; border-left: 4px solid #3498db;">
+                            <div style="font-weight: 600; color: #2d3436; margin-bottom: 0.5rem;">💧 Normal Water</div>
+                            <div style="font-size: 0.9rem; color: #636e72;">Flushes toxins, aids digestion, boosts metabolism</div>
+                        </div>
+                        <div style="background: #f1f8e9; padding: 1rem; border-radius: 8px; border-left: 4px solid #8bc34a;">
+                            <div style="font-weight: 600; color: #2d3436; margin-bottom: 0.5rem;">🌿 Methi Water</div>
+                            <div style="font-size: 0.9rem; color: #636e72;">Lowers blood sugar, aids weight loss, improves digestion</div>
+                        </div>
+                        <div style="background: #fffde7; padding: 1rem; border-radius: 8px; border-left: 4px solid #fdd835;">
+                            <div style="font-weight: 600; color: #2d3436; margin-bottom: 0.5rem;">🍋 Lemon Water</div>
+                            <div style="font-size: 0.9rem; color: #636e72;">Boosts immunity, aids fat loss, improves skin</div>
+                        </div>
+                        <div style="background: #ffe0b2; padding: 1rem; border-radius: 8px; border-left: 4px solid #ffb74d;">
+                            <div style="font-weight: 600; color: #2d3436; margin-bottom: 0.5rem;">🥄 Ginger Tea</div>
+                            <div style="font-size: 0.9rem; color: #636e72;">Improves digestion, reduces inflammation, boosts metabolism</div>
+                        </div>
+                        <div style="background: #c8e6c9; padding: 1rem; border-radius: 8px; border-left: 4px solid #66bb6a;">
+                            <div style="font-weight: 600; color: #2d3436; margin-bottom: 0.5rem;">🍃 Green Tea</div>
+                            <div style="font-size: 0.9rem; color: #636e72;">Burns fat, antioxidants, improves focus</div>
+                        </div>
+                        <div style="background: #e0f2f1; padding: 1rem; border-radius: 8px; border-left: 4px solid #26a69a;">
+                            <div style="font-weight: 600; color: #2d3436; margin-bottom: 0.5rem;">🌱 Herbal Tea</div>
+                            <div style="font-size: 0.9rem; color: #636e72;">Calms digestion, reduces bloating, aids sleep</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="motivation" class="page">
+                <div class="motivation-container">
+                    <div class="quote-card">
+                        <div class="quote" id="dailyQuote">"The only impossible journey is the one you never begin. Start today!"</div>
+                        <div class="author">— Personal Development</div>
+                    </div>
+
+                    <div class="motivation-section">
+                        <h3>💪 Why You're Doing This</h3>
+                        <p>You've decided to transform your body and health. That's incredible! Every single day you commit to this journey, you're building habits that will last a lifetime.</p>
+                        <p>The 69kg → 50kg transformation isn't just about the number on the scale. It's about:</p>
+                        <ul style="margin-left: 2rem; margin-top: 0.5rem; line-height: 1.8;">
+                            <li>✅ Feeling more confident and energetic</li>
+                            <li>✅ Building discipline and self-control</li>
+                            <li>✅ Improving your health markers</li>
+                            <li>✅ Achieving something you set your mind to</li>
+                        </ul>
+                    </div>
+
+                    <div class="motivation-section">
+                        <h3>🎯 Your Strategy</h3>
+                        <p><strong>Daily Intake:</strong> 1,600 calories</p>
+                        <p><strong>Daily Burn:</strong> ~530 calories (yoga + workout)</p>
+                        <p><strong>Daily Deficit:</strong> ~500 calories = 0.5kg loss per week</p>
+                        <p style="margin-top: 1rem; color: #667eea; font-weight: 600;">Estimated completion: 19 weeks (~4.5 months)</p>
+                    </div>
+
+                    <div class="milestone-list">
+                        <h3 style="margin-bottom: 1.5rem;">🏆 Your Milestones</h3>
+                        <div class="milestone-item">
+                            <div class="number">1</div>
+                            <div class="text">
+                                <div style="font-weight: 600;">65 kg - 4kg Lost</div>
+                                <div class="date">Week 4 • You're on fire! 🔥</div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="number">2</div>
+                            <div class="text">
+                                <div style="font-weight: 600;">60 kg - 9kg Lost</div>
+                                <div class="date">Week 9 • Almost halfway there! 🎯</div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="number">3</div>
+                            <div class="text">
+                                <div style="font-weight: 600;">55 kg - 14kg Lost</div>
+                                <div class="date">Week 14 • So close to the goal! 💪</div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="number">4</div>
+                            <div class="text">
+                                <div style="font-weight: 600;">50 kg - GOAL ACHIEVED! 🎉</div>
+                                <div class="date">Week 19 • You did it! Celebrate!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="motivation-section">
+                        <h3>⭐ Motivational Reminders</h3>
+                        <p>✨ <strong>Remember:</strong> Progress, not perfection. Missing one meal or workout doesn't derail your journey.</p>
+                        <p>✨ <strong>Stay Consistent:</strong> The magic is in the daily habit. Show up for yourself every single day.</p>
+                        <p>✨ <strong>You're Not Alone:</strong> Thousands of people are on similar journeys. Share your progress and inspire others!</p>
+                        <p>✨ <strong>Celebrate Small Wins:</strong> Every kg lost, every workout completed, every healthy meal choice matters!</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const foodDatabase = {
+            '1': {name: 'Breakfast: Oatmeal', cals: 350},
+            '2': {name: 'Breakfast: Eggs', cals: 400},
+            '3': {name: 'Lunch: Chicken', cals: 500},
+            '4': {name: 'Snack: Apple', cals: 80},
+            '5': {name: 'Dinner: Fish', cals: 480}
+        };
+
+        const startWeight = 69;
+        const goalWeight = 50;
+        const totalToLose = startWeight - goalWeight;
+        const calorieTarget = 1600;
+
+        let meals = JSON.parse(localStorage.getItem('mealsToday') || '[]');
+        let weights = JSON.parse(localStorage.getItem('weights') || '[]');
+
+        if (weights.length === 0) {
+            weights = [{date: getTodayDate(), weight: startWeight}];
+            localStorage.setItem('weights', JSON.stringify(weights));
+        }
+
+        const quotes = [
+            "The only impossible journey is the one you never begin. Start today!",
+            "Success is the sum of small efforts repeated day after day.",
+            "Don't watch the clock; do what it does. Keep going!",
+            "Take care of your body. It's the only place you have to live.",
+            "Progress, not perfection. Every effort counts!",
+            "Your body can stand almost anything. It's your mind you need to convince.",
+            "Discipline is doing what needs to be done, even if you don't want to do it.",
+            "The pain of discipline weighs ounces while the pain of regret weighs tons."
+        ];
+
+        // Indian Meal Plan Data
+        const mealPlan = {
+            'Monday': [
+                {time: '6:30 AM', meal: 'Oats with banana & almonds', cal: 320},
+                {time: '9:30 AM', meal: 'Green tea + 1 biscuit', cal: 80},
+                {time: '12:30 PM', meal: 'Dal rice, cucumber salad, roti x2', cal: 480},
+                {time: '4:00 PM', meal: 'Methi water + apple', cal: 120},
+                {time: '7:30 PM', meal: 'Grilled chicken, broccoli, brown rice', cal: 420}
+            ],
+            'Tuesday': [
+                {time: '6:30 AM', meal: 'Idli x2 with sambar & chutney', cal: 340},
+                {time: '9:30 AM', meal: 'Lemon water + 2 almonds', cal: 100},
+                {time: '12:30 PM', meal: 'Moong dal, vegetable curry, roti x2', cal: 460},
+                {time: '4:00 PM', meal: 'Herbal tea + orange', cal: 110},
+                {time: '7:30 PM', meal: 'Fish curry, spinach, brown rice', cal: 430}
+            ],
+            'Wednesday': [
+                {time: '6:30 AM', meal: 'Dosa with potato filling & chutney', cal: 350},
+                {time: '9:30 AM', meal: 'Green tea + 1 rusk', cal: 90},
+                {time: '12:30 PM', meal: 'Chickpea curry, salad, roti x2', cal: 470},
+                {time: '4:00 PM', meal: 'Ginger tea + peanuts', cal: 130},
+                {time: '7:30 PM', meal: 'Tofu stir-fry, mixed vegetables, quinoa', cal: 410}
+            ],
+            'Thursday': [
+                {time: '6:30 AM', meal: 'Poha with vegetables & peanuts', cal: 330},
+                {time: '9:30 AM', meal: 'Buttermilk + 1 biscuit', cal: 100},
+                {time: '12:30 PM', meal: 'Rajma, brown rice, vegetable curry, roti', cal: 480},
+                {time: '4:00 PM', meal: 'Lemon water + carrot stick', cal: 80},
+                {time: '7:30 PM', meal: 'Grilled paneer, capsicum, roti x2', cal: 420}
+            ],
+            'Friday': [
+                {time: '6:30 AM', meal: 'Upma with vegetables & peas', cal: 320},
+                {time: '9:30 AM', meal: 'Green tea + 1 cookie', cal: 100},
+                {time: '12:30 PM', meal: 'Lentil soup, vegetable salad, roti x2', cal: 450},
+                {time: '4:00 PM', meal: 'Herbal tea + pomegranate', cal: 110},
+                {time: '7:30 PM', meal: 'Grilled fish, sweet potato, broccoli', cal: 440}
+            ]
+        };
+
+        let waterIntake = JSON.parse(localStorage.getItem('waterToday') || '[]');
+
+        function renderMealPlan() {
+            const container = document.getElementById('mealPlanContainer');
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            
+            let html = '';
+            days.forEach(day => {
+                const dayMeals = mealPlan[day];
+                const totalCals = dayMeals.reduce((sum, m) => sum + m.cal, 0);
+                
+                html += `<div class="day-plan">
+                    <h3>📅 ${day} - ${totalCals} calories</h3>
+                    ${dayMeals.map(m => `
+                        <div class="meal-row">
+                            <div class="meal-time">${m.time}</div>
+                            <div class="meal-food">${m.meal}</div>
+                            <div class="meal-cal">${m.cal} cal</div>
+                        </div>
+                    `).join('')}
+                </div>`;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function addWater(type) {
+            const today = getTodayDate();
+            const waterTypes = {
+                'water': '💧 Normal Water',
+                'methi': '🌿 Methi Water',
+                'lemon': '🍋 Lemon Water',
+                'ginger': '🥄 Ginger Tea',
+                'green': '🍃 Green Tea',
+                'herbal': '🌱 Herbal Tea'
+            };
+            
+            waterIntake.push({
+                date: today,
+                type: waterTypes[type],
+                time: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})
+            });
+            
+            localStorage.setItem('waterToday', JSON.stringify(waterIntake));
+            updateWaterDisplay();
+        }
+
+        function updateWaterDisplay() {
+            const today = getTodayDate();
+            const todayWater = waterIntake.filter(w => w.date === today);
+            const waterGlasses = todayWater.length;
+            const waterLiters = (waterGlasses * 0.25).toFixed(2);
+            const waterPercent = Math.min(100, (waterGlasses / 12) * 100);
+            
+            document.getElementById('waterCount').textContent = waterGlasses;
+            document.getElementById('waterLiters').textContent = waterLiters;
+            document.getElementById('waterBar').style.width = waterPercent + '%';
+            document.getElementById('waterBar').textContent = Math.round(waterPercent) + '%';
+            
+            let logHtml = '';
+            if (todayWater.length === 0) {
+                logHtml = '<div style="text-align: center; color: #b2bec3;">No water logged yet. Start drinking! 💧</div>';
+            } else {
+                logHtml = todayWater.map((w, idx) => `
+                    <div style="display: flex; justify-content: space-between; padding: 0.8rem; background: white; border-radius: 6px; margin-bottom: 0.6rem;">
+                        <div>${w.type}</div>
+                        <div style="color: #b2bec3; font-size: 0.9rem;">${w.time}</div>
+                        <button onclick="removeWater(${idx})" style="background: #ff7675; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Remove</button>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('waterLog').innerHTML = logHtml;
+        }
+
+        function removeWater(idx) {
+            const today = getTodayDate();
+            const todayWater = waterIntake.filter(w => w.date === today);
+            if (idx < todayWater.length) {
+                waterIntake = waterIntake.filter(w => w !== todayWater[idx]);
+                localStorage.setItem('waterToday', JSON.stringify(waterIntake));
+                updateWaterDisplay();
+            }
+        }
+
+        function getTodayDate() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function goToPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update home stats if navigating to home
+            if (pageId === 'home') {
+                updateHomeStats();
+            }
+
+            // Update display for other pages
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const today = getTodayDate();
+            const mealsToday = meals.filter(m => m.date === today);
+            const totalEaten = mealsToday.reduce((sum, m) => sum + m.calories, 0);
+            const caloriesLeft = Math.max(0, calorieTarget - totalEaten);
+
+            document.getElementById('caloriesEaten').textContent = totalEaten;
+            document.getElementById('caloriesLeft').textContent = caloriesLeft;
+            const caloriePercent = Math.min(100, Math.round((totalEaten / calorieTarget) * 100));
+            document.getElementById('calorieBar').textContent = caloriePercent + '%';
+            document.getElementById('calorieBar').style.width = caloriePercent + '%';
+
+            const currentWeight = weights[weights.length - 1]?.weight || startWeight;
+            const lost = (startWeight - currentWeight).toFixed(1);
+            const remaining = Math.max(0, (goalWeight - currentWeight).toFixed(1));
+            const progress = Math.min(100, Math.round((lost / totalToLose) * 100));
+
+            document.getElementById('currentWeight').textContent = currentWeight.toFixed(1);
+            document.getElementById('lost').textContent = lost;
+            document.getElementById('remaining').textContent = remaining;
+            document.getElementById('weightBar').style.width = progress + '%';
+            document.getElementById('weightBar').textContent = progress + '%';
+
+            renderMeals(mealsToday);
+        }
+
+        function updateHomeStats() {
+            const today = getTodayDate();
+            const mealsToday = meals.filter(m => m.date === today);
+            const totalEaten = mealsToday.reduce((sum, m) => sum + m.calories, 0);
+            const caloriesLeft = Math.max(0, calorieTarget - totalEaten);
+
+            const currentWeight = weights[weights.length - 1]?.weight || startWeight;
+            const lost = (startWeight - currentWeight).toFixed(1);
+            const remaining = Math.max(0, (goalWeight - currentWeight).toFixed(1));
+            const progress = Math.min(100, Math.round((lost / totalToLose) * 100));
+
+            document.getElementById('homeProgress').textContent = progress + '%';
+            document.getElementById('homeWeight').textContent = currentWeight.toFixed(1);
+            document.getElementById('homeLost').textContent = lost;
+            document.getElementById('homeRemaining').textContent = remaining;
+            document.getElementById('homeMeals').textContent = mealsToday.length;
+            document.getElementById('homeCalsEaten').textContent = totalEaten;
+            document.getElementById('homeCalsLeft').textContent = caloriesLeft;
+            document.getElementById('homeDeficit').textContent = Math.round(caloriesLeft / 7);
+
+            // Show random quote
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('dailyQuote').textContent = `"${randomQuote}"`;
+        }
+
+        function renderMeals(mealsToday) {
+            const list = document.getElementById('mealsList');
+            if (mealsToday.length === 0) {
+                list.innerHTML = '<div style="text-align: center; padding: 2rem; color: #b2bec3;">No meals logged yet</div>';
+                return;
+            }
+            list.innerHTML = mealsToday.map((meal, idx) => `
+                <div class="food-item">
+                    <div class="food-name">
+                        <div>${meal.name}</div>
+                        <div>${meal.time}</div>
+                    </div>
+                    <div class="food-cals">${meal.calories}</div>
+                    <button class="delete-btn" onclick="deleteMeal(${idx})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function addMeal(name, calories) {
+            const today = getTodayDate();
+            const time = new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+            meals.push({date: today, name, calories, time});
+            localStorage.setItem('mealsToday', JSON.stringify(meals));
+            updateDisplay();
+        }
+
+        function addPresetFood() {
+            const select = document.getElementById('foodSelect');
+            if (select.value) {
+                const food = foodDatabase[select.value];
+                addMeal(food.name, food.cals);
+                select.value = '';
+                alert('✓ Meal logged!');
+            }
+        }
+
+        function addCustomFood() {
+            const name = document.getElementById('customFood').value;
+            const cals = parseInt(document.getElementById('customCals').value);
+            if (name && cals > 0) {
+                addMeal(name, cals);
+                document.getElementById('customFood').value = '';
+                document.getElementById('customCals').value = '';
+                alert('✓ Custom meal logged!');
+            }
+        }
+
+        function deleteMeal(idx) {
+            const today = getTodayDate();
+            const todayMeals = meals.filter(m => m.date === today);
+            if (idx < todayMeals.length) {
+                const mealToDelete = todayMeals[idx];
+                meals = meals.filter(m => m !== mealToDelete);
+                localStorage.setItem('mealsToday', JSON.stringify(meals));
+                updateDisplay();
+            }
+        }
+
+        function logWeight() {
+            const input = document.getElementById('weightInput');
+            const weight = parseFloat(input.value);
+            if (weight && weight > 0) {
+                const today = getTodayDate();
+                weights = [{date: today, weight}];
+                localStorage.setItem('weights', JSON.stringify(weights));
+                input.value = '';
+                updateDisplay();
+                alert('✓ Weight logged!');
+            }
+        }
+
+        // Initialize
+        updateDisplay();
+        updateHomeStats();
+        renderMealPlan();
+        updateWaterDisplay();
+
+        // Yoga & Workout Data
+        const yogaAsanas = [
+            {name: 'Neck Rotations', time: '2 min', videoId: 'UVuKjLb1ry0'},
+            {name: 'Cat-Cow Stretch', time: '3 min', videoId: 'wovqRsIiZLs'},
+            {name: 'Downward Dog', time: '2 min', videoId: 'M87FV6-V_x0'},
+            {name: 'Warrior I', time: '3 min', videoId: 'lYfqbHbhJI8'},
+            {name: 'Warrior II', time: '3 min', videoId: 'EHrXmSjqp2s'},
+            {name: 'Triangle Pose', time: '2 min', videoId: 'JLkMO5GLfDk'},
+            {name: 'Tree Pose', time: '2 min', videoId: 'yIf7WjJAWtc'},
+            {name: 'Seated Forward Fold', time: '3 min', videoId: 'V6f2FsPsf2Q'},
+            {name: 'Cobra Pose', time: '2 min', videoId: '_7WxKQ0Qxl4'},
+            {name: 'Child\'s Pose', time: '3 min', videoId: 'J8CYeHw2b3s'},
+            {name: 'Savasana', time: '5 min', videoId: 'Z4tAu5-D_9w'},
+            {name: 'Breathing', time: '2 min', videoId: 'pG39SJkXb6E'}
+        ];
+
+        const workoutExercises = [
+            {name: 'Jumping Jacks', time: '2 min', videoId: 'JZRXZ79nJ-c'},
+            {name: 'Burpees', time: '3 min', reps: '3x10', videoId: 'g8Wt-fPwFfU'},
+            {name: 'Push-ups', time: '3 min', reps: '3x12', videoId: 'IODxDxX7oi4'},
+            {name: 'Squats', time: '3 min', reps: '3x15', videoId: 'xslK8ygovXo'},
+            {name: 'Lunges', time: '3 min', reps: '3x10', videoId: 'Z2n58m1tgT4'},
+            {name: 'Plank', time: '2 min', reps: '3x45s', videoId: 'p4VLlnUqOjc'},
+            {name: 'Mountain Climbers', time: '3 min', reps: '3x20', videoId: 'HZOCvNa3Ll4'},
+            {name: 'High Knees', time: '2 min', videoId: 'pZE-yajB8wQ'},
+            {name: 'Dips', time: '3 min', reps: '3x10', videoId: 'QmV5IEfFDSw'},
+            {name: 'Calf Raises', time: '2 min', reps: '3x20', videoId: 'Te_4v7FqQAo'},
+            {name: 'Bicycle Crunches', time: '2 min', reps: '3x15', videoId: 'I1YpWjM9gPQ'},
+            {name: 'Russian Twists', time: '2 min', reps: '3x20', videoId: 'ORJjKZECVvE'},
+            {name: 'Leg Raises', time: '2 min', reps: '3x10', videoId: 'wLp3yt6eMA8'},
+            {name: 'Superman Holds', time: '2 min', reps: '3x30s', videoId: 'Fq1bJrIUBOU'},
+            {name: 'Cool-down Stretch', time: '4 min', videoId: 'oa6UJxVrFQo'},
+            {name: 'Breathing', time: '1 min', videoId: 'pG39SJkXb6E'}
+        ];
+
+        let selectedWorkoutDay = 0;
+        let yogaProgress = JSON.parse(localStorage.getItem('yogaProgress') || '[]');
+        let workoutExerciseProgress = JSON.parse(localStorage.getItem('workoutProgress') || '[]');
+        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        let timerInterval = null;
+        let timerSeconds = 0;
+
+        function selectWorkoutDay(dayIdx) {
+            selectedWorkoutDay = dayIdx;
+            document.querySelectorAll('.day-select-btn').forEach((btn, idx) => {
+                if (idx === dayIdx) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            renderDayWorkout(dayIdx);
+        }
+
+        function renderDayWorkout(dayIdx) {
+            const dayName = dayNames[dayIdx];
+            const dayKey = `day-${dayIdx}`;
+            const dayYogaProgress = yogaProgress.filter(p => p.day === dayKey);
+            const dayWorkoutProgress = workoutExerciseProgress.filter(p => p.day === dayKey);
+            
+            let html = `<div style="background: #f5f6f7; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 600; color: #667eea;">${dayName}'s Schedule</div>`;
+
+            html += `<div style="margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">🧘 Morning Yoga (6:30-7:30 AM)</h3>
+                <div style="background: #f5f6f7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <div style="font-weight: 600; color: #667eea; margin-bottom: 0.5rem;">60 minutes | ~180 cal</div>
+                    <div style="font-size: 0.9rem; color: #636e72;">${dayYogaProgress.length}/12 completed</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${Math.round((dayYogaProgress.length/12)*100)}%;">${Math.round((dayYogaProgress.length/12)*100)}%</div>
+                </div>
+                <div style="margin-top: 1rem;" id="dayYogaList"></div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">💪 Intense Workout (5:30-6:30 PM)</h3>
+                <div style="background: #f5f6f7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <div style="font-weight: 600; color: #667eea; margin-bottom: 0.5rem;">60 minutes | ~350 cal</div>
+                    <div style="font-size: 0.9rem; color: #636e72;">${dayWorkoutProgress.length}/16 completed</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${Math.round((dayWorkoutProgress.length/16)*100)}%;">${Math.round((dayWorkoutProgress.length/16)*100)}%</div>
+                </div>
+                <div style="margin-top: 1rem;" id="dayWorkoutList"></div>
+            </div>`;
+
+            document.getElementById('dayWorkoutContent').innerHTML = html;
+
+            const yogaList = document.getElementById('dayYogaList');
+            yogaList.innerHTML = yogaAsanas.map((asana, idx) => {
+                const isCompleted = dayYogaProgress.some(p => p.index === idx);
+                return `<div class="exercise-item ${isCompleted ? 'completed' : ''}" onclick="openExerciseModalDay(${idx}, 'yoga', ${dayIdx})">
+                    <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="event.stopPropagation(); toggleYogaDay(${idx}, ${dayIdx})" />
+                    <span class="exercise-name">${asana.name}</span>
+                    <span class="exercise-time">${asana.time}</span>
+                </div>`;
+            }).join('');
+
+            const workoutList = document.getElementById('dayWorkoutList');
+            workoutList.innerHTML = workoutExercises.map((exercise, idx) => {
+                const isCompleted = dayWorkoutProgress.some(p => p.index === idx);
+                return `<div class="exercise-item ${isCompleted ? 'completed' : ''}" onclick="openExerciseModalDay(${idx}, 'workout', ${dayIdx})">
+                    <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="event.stopPropagation(); toggleWorkoutDay(${idx}, ${dayIdx})" />
+                    <div style="flex: 1;">
+                        <div class="exercise-name">${exercise.name}</div>
+                        ${exercise.reps ? `<div style="font-size: 0.85rem; color: #b2bec3;">${exercise.reps}</div>` : ''}
+                    </div>
+                    <span class="exercise-time">${exercise.time}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleYogaDay(idx, dayIdx) {
+            const dayKey = `day-${dayIdx}`;
+            const existingIndex = yogaProgress.findIndex(p => p.day === dayKey && p.index === idx);
+            if (existingIndex >= 0) yogaProgress.splice(existingIndex, 1);
+            else yogaProgress.push({day: dayKey, index: idx});
+            localStorage.setItem('yogaProgress', JSON.stringify(yogaProgress));
+            renderDayWorkout(dayIdx);
+        }
+
+        function toggleWorkoutDay(idx, dayIdx) {
+            const dayKey = `day-${dayIdx}`;
+            const existingIndex = workoutExerciseProgress.findIndex(p => p.day === dayKey && p.index === idx);
+            if (existingIndex >= 0) workoutExerciseProgress.splice(existingIndex, 1);
+            else workoutExerciseProgress.push({day: dayKey, index: idx});
+            localStorage.setItem('workoutProgress', JSON.stringify(workoutExerciseProgress));
+            renderDayWorkout(dayIdx);
+        }
+
+        function parseTimeToSeconds(timeStr) {
+            const match = timeStr.match(/(\d+)/);
+            return match ? parseInt(match[0]) * 60 : 120;
+        }
+
+        function openExerciseModalDay(idx, type, dayIdx) {
+            const exercise = type === 'yoga' ? yogaAsanas[idx] : workoutExercises[idx];
+            document.getElementById('modalTitle').textContent = `${dayNames[dayIdx]} - ${exercise.name}`;
+            document.getElementById('modalVideo').src = `https://www.youtube.com/embed/${exercise.videoId}`;
+            
+            const totalSeconds = parseTimeToSeconds(exercise.time);
+            timerSeconds = 0;
+            
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            document.getElementById('modalTimer').textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('modalTimerInfo').textContent = exercise.time + ' allocated';
+            
+            let infoHTML = `<div>📺 Watch & follow along</div>`;
+            if (exercise.reps) infoHTML += `<div style="font-weight: 600; color: #667eea; margin-top: 0.5rem;">💪 ${exercise.reps}</div>`;
+            infoHTML += `<div style="margin-top: 0.5rem; font-size: 0.9rem;">⏱️ Time: ${exercise.time}</div>`;
+            document.getElementById('modalInfo').innerHTML = infoHTML;
+            
+            startTimer(totalSeconds);
+            
+            document.getElementById('markDoneBtn').onclick = () => {
+                if (type === 'yoga') toggleYogaDay(idx, dayIdx);
+                else toggleWorkoutDay(idx, dayIdx);
+                closeExerciseModal();
+            };
+            
+            document.getElementById('exerciseModal').classList.add('active');
+        }
+
+        function closeExerciseModal() {
+            document.getElementById('exerciseModal').classList.remove('active');
+            clearInterval(timerInterval);
+        }
+
+        function startTimer(totalSeconds) {
+            clearInterval(timerInterval);
+            timerSeconds = 0;
+            const updateTimer = () => {
+                const remaining = totalSeconds - timerSeconds;
+                const h = Math.floor(remaining / 3600);
+                const m = Math.floor((remaining % 3600) / 60);
+                const s = remaining % 60;
+                document.getElementById('modalTimer').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                if (timerSeconds >= totalSeconds) {
+                    clearInterval(timerInterval);
+                    document.getElementById('modalTimer').textContent = 'Time\'s up!';
+                } else {
+                    timerSeconds++;
+                }
+            };
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('exerciseModal');
+            if (e.target === modal) closeExerciseModal();
+        });
+
+        // Progress Analytics Functions
+        function showProgressView(view) {
+            document.querySelectorAll('.progress-view-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('dailyView').style.display = 'none';
+            document.getElementById('monthlyView').style.display = 'none';
+            document.getElementById('sixMonthsView').style.display = 'none';
+            
+            if (view === 'daily') {
+                document.getElementById('viewDaily').classList.add('active');
+                document.getElementById('dailyView').style.display = 'block';
+                renderDailyLogs();
+            } else if (view === 'monthly') {
+                document.getElementById('viewMonthly').classList.add('active');
+                document.getElementById('monthlyView').style.display = 'block';
+                renderMonthlySummary();
+            } else if (view === 'sixmonths') {
+                document.getElementById('viewSixMonths').classList.add('active');
+                document.getElementById('sixMonthsView').style.display = 'block';
+                renderSixMonthsProgress();
+            }
+        }
+
+        function renderDailyLogs() {
+            const last30Days = {};
+            const today = new Date();
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayMeals = meals.filter(m => m.date === dateStr);
+                last30Days[dateStr] = {
+                    calories: dayMeals.reduce((sum, m) => sum + m.calories, 0),
+                    mealsCount: dayMeals.length,
+                    dayName: date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'})
+                };
+            }
+            let html = '';
+            for (const [date, data] of Object.entries(last30Days)) {
+                html += `<div style="background: #f5f6f7; padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <div style="font-weight: 600; color: #2d3436;">${data.dayName}</div>
+                            <div style="font-size: 0.85rem; color: #b2bec3;">${data.mealsCount} meals</div>
+                        </div>
+                        <div style="font-weight: 700; color: #667eea;">${data.calories}</div>
+                    </div>
+                </div>`;
+            }
+            document.getElementById('dailyLogs').innerHTML = html;
+        }
+
+        function renderMonthlySummary() {
+            const today = new Date();
+            let totalMeals = 0, monthCals = 0;
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayMeals = meals.filter(m => m.date === dateStr);
+                totalMeals += dayMeals.length;
+                monthCals += dayMeals.reduce((sum, m) => sum + m.calories, 0);
+            }
+            let startW = weights[0]?.weight || 69;
+            let endW = weights[weights.length - 1]?.weight || 69;
+            document.getElementById('monthWorkouts').textContent = yogaProgress.length + workoutExerciseProgress.length;
+            document.getElementById('monthWeightLost').textContent = (startW - endW).toFixed(1);
+            document.getElementById('monthAvgCal').textContent = Math.round(monthCals / 30);
+
+            let chartHtml = '';
+            const step = Math.max(1, Math.floor(weights.length / 6));
+            for (let i = 0; i < weights.length; i += step) {
+                const w = weights[i]?.weight || 69;
+                const h = Math.max(20, (69 - w) * 8);
+                chartHtml += `<div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 100%; height: ${h}px; border-radius: 4px;"></div>
+                    <div style="font-size: 0.7rem; color: #b2bec3; margin-top: 0.5rem;">${w.toFixed(1)}</div>
+                </div>`;
+            }
+            document.getElementById('weightChart').innerHTML = chartHtml;
+        }
+
+        function renderSixMonthsProgress() {
+            const today = new Date();
+            let totalWorkouts = yogaProgress.length + workoutExerciseProgress.length;
+            let daysActive = new Set(meals.map(m => m.date)).size;
+            let startW = weights[0]?.weight || 69;
+            let endW = weights[weights.length - 1]?.weight || 69;
+            let totalLost = (startW - endW).toFixed(1);
+            
+            document.getElementById('sixMonthWorkouts').textContent = totalWorkouts;
+            document.getElementById('sixMonthWeightLost').textContent = totalLost;
+            document.getElementById('sixMonthDaysActive').textContent = daysActive;
+
+            let achievementsHtml = '';
+            if (totalLost >= 1) achievementsHtml += '<div style="background: #e8f8f5; padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem; border-left: 4px solid #00b894;">🏆 Lost 1kg+</div>';
+            if (totalLost >= 5) achievementsHtml += '<div style="background: #e8f8f5; padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem; border-left: 4px solid #00b894;">🌟 Lost 5kg+</div>';
+            if (totalWorkouts >= 10) achievementsHtml += '<div style="background: #fef5e7; padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem; border-left: 4px solid #F39C12;">💪 10+ Workouts</div>';
+            if (daysActive >= 30) achievementsHtml += '<div style="background: #fef9e7; padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem; border-left: 4px solid #f1c40f;">🔥 30+ Active Days</div>';
+            document.getElementById('achievements').innerHTML = achievementsHtml || '<div style="color: #b2bec3;">Keep tracking!</div>';
+
+            let chartHtml = '';
+            const step = Math.max(1, Math.floor(weights.length / 12));
+            for (let i = 0; i < weights.length; i += step) {
+                const w = weights[i]?.weight || 69;
+                const h = Math.max(10, (69 - w) * 12);
+                chartHtml += `<div style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: ${h}px; border-radius: 3px;"></div>`;
+            }
+            document.getElementById('weightTrendChart').innerHTML = chartHtml;
+
+            const allCals = meals.reduce((sum, m) => sum + m.calories, 0);
+            const avgCals = daysActive > 0 ? Math.round(allCals / daysActive) : 0;
+            const avgMeals = daysActive > 0 ? (meals.length / daysActive).toFixed(1) : 0;
+            document.getElementById('detailedStats').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                    <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 3px solid #667eea;">
+                        <div style="font-size: 0.9rem; color: #b2bec3;">Avg Meals/Day</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">${avgMeals}</div>
+                    </div>
+                    <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 3px solid #00b894;">
+                        <div style="font-size: 0.9rem; color: #b2bec3;">Avg Cal/Day</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #00b894;">${avgCals}</div>
+                    </div>
+                    <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 3px solid #F39C12;">
+                        <div style="font-size: 0.9rem; color: #b2bec3;">Total Meals</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #F39C12;">${meals.length}</div>
+                    </div>
+                    <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 3px solid #667eea;">
+                        <div style="font-size: 0.9rem; color: #b2bec3;">Consistency</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">${Math.round((daysActive / 180) * 100)}%</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render meal plan initially
+        renderMealPlan();
+        renderDayWorkout(0);
+    </script>
+</body>
+</html>
